@@ -49,11 +49,19 @@ class PatientController extends Controller
             'required' => 'Kolom :attribute perlu diisi.',
             'min' => 'Kolom :attribute membutuhkan setidaknya :min karakter.',
             'max' => 'Kolom :attribute tidak boleh melebihi :max karakter.',
+            'integer' => 'Kolom :attribute harus berisi angka.',
+            'in' => 'Kolom ini hanya bisa diisi dengan "ayah", "ibu", atau "anak".',
         ];
 
         // Validator
         $validator = Validator::make($request->all(), [
             'nama_lengkap' => ['required', 'min:1', 'max:255'],
+            'nik' => ['required', 'min:16', 'max:16'],
+            'alamat' => ['required'],
+            'no_rekam_medis' => ['required', 'min:1', 'max:64'],
+            'tinggi_badan' => ['required', 'integer', 'min:1', 'max:999'],
+            'berat_badan' => ['required', 'integer', 'min:1', 'max:999'],
+            'peranan_keluarga' => ['required', 'in:ayah,ibu,anak'],
         ]);
 
         // Cek jika validator gagal
@@ -67,6 +75,12 @@ class PatientController extends Controller
         // Daftarkan pasien
         $patient = new Patient;
         $patient->nama_lengkap = $request->nama_lengkap;
+        $patient->nik = $request->nik;
+        $patient->alamat = $request->alamat;
+        $patient->no_rekam_medis = $request->no_rekam_medis;
+        $patient->tinggi_badan = $request->tinggi_badan;
+        $patient->peranan_keluarga = $request->peranan_keluarga;
+        $patient->riwayat_penyakit = ($request->riwayat_penyakit ? $request->riwayat_penyakit : null);
         $patient->save();
 
         // Tampilkan data pasien yang baru didaftarkan
@@ -116,11 +130,18 @@ class PatientController extends Controller
             'required' => 'Kolom :attribute perlu diisi.',
             'min' => 'Kolom :attribute membutuhkan setidaknya :min karakter.',
             'max' => 'Kolom :attribute tidak boleh melebihi :max karakter.',
+            'integer' => 'Kolom :attribute harus berisi angka.',
+            'in' => 'Kolom ini hanya bisa diisi dengan "ayah", "ibu", atau "anak".',
         ];
 
         // Validator
         $validator = Validator::make($request->all(), [
             'nama_lengkap' => ['min:1', 'max:255'],
+            'nik' => ['min:16', 'max:16'],
+            'no_rekam_medis' => ['min:1', 'max:64'],
+            'tinggi_badan' => ['integer', 'min:1', 'max:999'],
+            'berat_badan' => ['integer', 'min:1', 'max:999'],
+            'peranan_keluarga' => ['in:ayah,ibu,anak'],
         ]);
 
         // Cek jika validator gagal
@@ -134,6 +155,34 @@ class PatientController extends Controller
         // Update data pasien
         if($request->nama_lengkap != '') {
             $patient->nama_lengkap = $request->nama_lengkap;
+        }
+
+        if($request->nik != '') {
+            $patient->nik = $request->nik;
+        }
+
+        if($request->alamat != '') {
+            $patient->alamat = $request->alamat;
+        }
+
+        if($request->no_rekam_medis != '') {
+            $patient->no_rekam_medis = $request->no_rekam_medis;
+        }
+
+        if($request->tinggi_badan != '') {
+            $patient->tinggi_badan = $request->tinggi_badan;
+        }
+
+        if($request->berat_badan != '') {
+            $patient->berat_badan = $request->berat_badan;
+        }
+
+        if($request->peranan_keluarga != '') {
+            $patient->peranan_keluarga = $request->peranan_keluarga;
+        }
+
+        if($request->riwayat_penyakit != '') {
+            $patient->riwayat_penyakit = ($request->riwayat_penyakit ? $request->riwayat_penyakit : null);
         }
 
         $patient->save();
