@@ -23,17 +23,17 @@ class UserController extends Controller
         // Custom message untuk validator
         $messages = [
             'required' => 'Kolom :attribute perlu diisi.',
-            'string' => 'Kolom :attribute harus bertipe data string.',
-            'min' => 'Kolom :attribute harus berisi minimal :min karakter.',
+            'unique' => 'Email sudah terpakai.',
+            'email' => 'Kolom :attribute perlu diisi oleh email yang valid.',
+            'min' => 'Kolom :attribute perlu diisi setidaknya :min karakter.',
             'max' => 'Kolom :attribute tidak boleh melebihi :max karakter.',
-            'email' => 'Kolom :attribute harus berisi email yang valid.',
-            'confirmed' => 'Kolom konfirmasi password tidak sama.',
+            'confirmed' => 'Password konfirmasi tidak sama.',
         ];
         
         // Validasi input yang masuk
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'min:6', 'max:255'],
-            'email' => ['required', 'email'],
+            'email' => ['required', 'email', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'max:255', 'confirmed'],
             'password_confirmation' => ['required', 'string', 'min:8', 'max:255'], 
         ], $messages);
@@ -72,16 +72,17 @@ class UserController extends Controller
         // Custom message untuk validator
         $messages = [
             'required' => 'Kolom :attribute perlu diisi.',
-            'string' => 'Kolom :attribute harus bertipe data string.',
-            'email' => 'Kolom :attribute memerlukan email yang valid.',
-            'min' => 'Kolom :attribute harus berisi :min karakter.',
-            'max' => 'Kolom :attribute tidak boleh lebih dari :max karakter.',
+            'unique' => 'Email sudah terpakai.',
+            'email' => 'Kolom :attribute perlu diisi oleh email yang valid.',
+            'min' => 'Kolom :attribute perlu diisi setidaknya :min karakter.',
+            'max' => 'Kolom :attribute tidak boleh melebihi :max karakter.',
+            'confirmed' => 'Password konfirmasi tidak sama.',
         ];
 
         // Validator
         $validator = Validator::make($request->all(), [
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string', 'min:8', 'max:255'],
+            'email' => ['required', 'email', 'unique'],
+            'password' => ['required', 'min:8', 'max:255'],
         ], $messages);
 
         // Return error response jika input tidak memenuhi kriteria validasi
