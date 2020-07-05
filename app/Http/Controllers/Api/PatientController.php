@@ -1,0 +1,164 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Patient;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
+
+class PatientController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        // Ambil semua data pasien dari database
+        $patients = Patient::all();
+
+        // Tampilkan data pasien
+        return response()->json([
+            'message' => 'Berhasil mengambil data semua pasien.',
+            'data' => $patients,
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        // Custom message untuk validator
+        $messages = [
+            'required' => 'Kolom :attribute perlu diisi.',
+            'min' => 'Kolom :attribute membutuhkan setidaknya :min karakter.',
+            'max' => 'Kolom :attribute tidak boleh melebihi :max karakter.',
+        ];
+
+        // Validator
+        $validator = Validator::make($request->all(), [
+            'nama_lengkap' => ['required', 'min:1', 'max:255'],
+        ]);
+
+        // Cek jika validator gagal
+        if($validator->fails()) {
+            return response()->json([
+                'message' => 'Terjadi kesalahan pada saat menambahkan data pasien.',
+                'error' => $validator->getMessageBag(),
+            ], 500);
+        }
+
+        // Daftarkan pasien
+        $patient = new Patient;
+        $patient->nama_lengkap = $request->nama_lengkap;
+        $patient->save();
+
+        // Tampilkan data pasien yang baru didaftarkan
+        return response()->json([
+            'message' => 'Berhasil menambahkan data pasien.',
+            'data' => $patient
+        ], 200);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Patient  $patient
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Patient $patient)
+    {
+        // Tampilkan detail pasien
+        return response()->json([
+            'message' => 'Detail pasien berhasil diambil.',
+            'data' => $patient,
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Patient  $patient
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Patient $patient)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Patient  $patient
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Patient $patient)
+    {
+        // Custom message untuk validator
+        $messages = [
+            'required' => 'Kolom :attribute perlu diisi.',
+            'min' => 'Kolom :attribute membutuhkan setidaknya :min karakter.',
+            'max' => 'Kolom :attribute tidak boleh melebihi :max karakter.',
+        ];
+
+        // Validator
+        $validator = Validator::make($request->all(), [
+            'nama_lengkap' => ['min:1', 'max:255'],
+        ]);
+
+        // Cek jika validator gagal
+        if($validator->fails()) {
+            return response()->json([
+                'message' => 'Terjadi kesalahan pada saat menambahkan data pasien.',
+                'error' => $validator->getMessageBag(),
+            ], 500);
+        }
+
+        // Update data pasien
+        if($request->nama_lengkap != '') {
+            $patient->nama_lengkap = $request->nama_lengkap;
+        }
+
+        $patient->save();
+
+        // Tampilkan response
+        return response()->json([
+            'message' => 'Berhasil mengubah data pasien.',
+            'data' => $patient,
+        ], 200);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Patient  $patient
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Patient $patient)
+    {
+        // Hapus data pasien
+        $patient->delete();
+
+        /// Tampilkan reponse
+        return response()->json([
+            'message' => 'Berhasil menghapus data pasien.',
+        ], 200);
+    }
+}
