@@ -12,6 +12,6 @@ class Patient extends Model
      * @var array
      */
     protected $fillable = [
-        'nama_lengkap',
+        'nama_lengkap', 'nik', 'alamat', 'no_rekam_medis', 'tinggi_badan', 'berat_badan', 'peranan_keluarga', 'riwayat_penyakit'
     ];
 }
