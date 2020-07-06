@@ -14,4 +14,5 @@ Route::group(['middleware' => 'auth:api'], function() {
     // Rute user management
     Route::resource('user', 'Api\UserManagement')->except(['create', 'edit']);
     Route::resource('patient', 'Api\PatientController')->except(['create', 'edit']);
+    Route::resource('article', 'Api\ArticleController')->except(['create', 'edit']);
 });
