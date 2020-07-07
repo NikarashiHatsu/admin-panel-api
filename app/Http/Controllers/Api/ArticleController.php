@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Article;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
@@ -48,16 +49,36 @@ class ArticleController extends Controller
         $messages = [
             'required' => 'Kolom :attribute perlu diisi.',
             'integer' => 'Kolom :attribute harus berbentuk angka.',
+            'file' => 'Kolom :attribute harus berbentuk file.',
+            'mimetypes' => 'Kolom :attribute harus diisi dengan foto berformat jpg, jpeg, atau png.',
+            'size' => 'Kolom :attribute harus diisi dengan foto dan ukuran tidak boleh melebihi 3MB / 3072KB.',
         ];
 
         // Validator
         $validator = Validator::make($request->all(), [
             'id_penulis' => ['required', 'integer'],
-            // 'foto_depan' => File, Gambar, Tipe: jpg, jpeg, png
+            'foto_depan' => ['required', 'file', 'mimetypes:image/jpg,image/jpeg,image/png', 'size:3072'],
             'redaksi' => ['required'],
             'published' => ['required'],
         ]);
 
+        // Validasikan foto
+        // Definisikan $path
+        $path = '';
+
+        if($request->hasFile('foto_depan')) {
+            $extension = $request->foto_depan->extension();
+            $path = $request->foto_depan->storeAs('images', 'foto-' . Carbon::now() . '.' . $extension);
+            
+            // Validasikan lagi apakah file terupload dengan benar
+            if(!$request->file('foto_depan')->isValid()) {
+                return response()->json([
+                    'message' => 'Gagal mengupload foto depan.',
+                    'error' => $validator->getMessageBag(),
+                ], 500);
+            }
+        }
+        
         // Jika validator gagal
         if($validator->fails()) {
             return response()->json([
@@ -69,7 +90,7 @@ class ArticleController extends Controller
         // Jika validator berhasil
         $article = new Article;
         $article->id_penulis = $request->id_penulis;
-        $article->foto_depan = $request->foto_depan;
+        $article->foto_depan = $path;
         $article->redaksi = $request->redaksi;
         $article->published = $request->published;
         $article->save();
@@ -130,30 +151,38 @@ class ArticleController extends Controller
         $messages = [
             'required' => 'Kolom :attribute perlu diisi.',
             'integer' => 'Kolom :attribute harus berbentuk angka.',
+            'file' => 'Kolom :attribute harus berbentuk file.',
+            'mimetypes' => 'Kolom :attribute harus diisi dengan foto berformat jpg, jpeg, atau png.',
+            'size' => 'Kolom :attribute harus diisi dengan foto dan ukuran tidak boleh melebihi 3MB / 3072KB.',
         ];
 
         // Validator
         $validator = Validator::make($request->all(), [
-            'id_penulis' => ['required', 'integer'],
-            // 'foto_depan' => File, Gambar, Tipe: jpg, jpeg, png
-            'redaksi' => ['required'],
+            'foto_depan' => ['file', 'mimetypes:image/jpg,image/jpeg,image/png', 'size:3072'],
             'published' => ['required'],
         ]);
 
-        // Jika validator gagal
-        if($validator->fails()) {
-            return response()->json([
-                'message' => 'Ada kesalahan saat mengubah artikel.',
-                'error' => $validator->getMessageBag(),
-            ], 500);
-        }
-
-        // Update artikel
-        if($request->id_penulis != '') {
-            $article->id_penulis = $request->id_penulis;
+        // Validasikan foto
+        // Definisikan $path
+        $path = '';
+        
+        if($request->hasFile('foto_depan')) {
+            $extension = $request->foto_depan->extension();
+            $path = $request->foto_depan->storeAs('images', 'foto-' . Carbon::now() . '.' . $extension);
+            
+            // Validasikan lagi apakah file terupload dengan benar
+            if(!$request->file('foto_depan')->isValid()) {
+                return response()->json([
+                    'message' => 'Gagal mengupload foto depan.',
+                    'error' => $validator->getMessageBag(),
+                ], 500);
+            }
         }
 
         // TODO: DO IMAGE EDIT
+        if($path != '') {
+            $article->foto_depan = $path;
+        }
         
         if($request->redaksi != '') {
             $article->redaksi = $request->redaksi;
