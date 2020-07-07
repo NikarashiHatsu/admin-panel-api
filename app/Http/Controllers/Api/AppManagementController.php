@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\AppManagement;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
@@ -104,6 +105,137 @@ class AppManagementController extends Controller
         return response()->json([
             'message' => 'Berhasil mengubah base url.',
             'data' => $appManagement->base_url,
+        ], 200);
+    }
+
+    /**
+     * Get the logo
+     *  
+     * @return Illuminate\Http\Response
+     */
+    public function get_logo()
+    {
+        // Ambil url logo
+        $logo = AppManagement::all();
+
+        // Tampilkan response
+        return response()->json([
+            'message' => 'Berhasil mengambil logo.',
+            'data' => $logo->logo,
+        ], 200);
+    }
+
+    /**
+     * Store the logo URL
+     * 
+     * @param Illuminate\Http\Request $request
+     * 
+     * @return Illuminate\Http\Response
+     */
+    public function store_logo(Request $request)
+    {
+        // Custom message
+        $messages = [
+            'required' => 'Kolom :attribute perlu diisi.',
+            'file' => 'Kolom :attribute harus diisi dengan file.',
+            'mimetype' => 'Kolom :attribute harus diisi dengan foto yang berekstensi jpg, jpeg, atau png.',
+            'size' => 'File foto tidak boleh melebihi 3MB.',
+        ];
+
+        // Validator
+        $validator = Validator::make($request->all(), [
+            'logo' => ['required', 'file', 'mimetype:image/jpg,image/jpeg,image/png', 'size:3072'],
+        ], $messages);
+
+        // Tampilkan response jika validator gagal memvalidasi
+        if($validator->fails()) {
+            return response()->json([
+                'message' => 'Ada kesalahan pada saat mengupload logo.',
+                'error' => $validator->getMessageBag(),
+            ], 500);
+        }
+
+        // Upload file
+        $path = '';
+
+        if($request->hasFile('logo')) {
+            $extension = $request->logo->extension();
+            $path = $request->logo->storeAs('logo', 'logo-' . Carbon::now() . '.' . $extension);
+
+            if(!$request->file('logo')->isValid()) {
+                return response()->json([
+                    'message' => 'Ada kesalahan pada saat mengunggah logo.',
+                ], 500);
+            }
+        }
+
+        // Simpan ke database
+        $logo = new AppManagement;
+        $logo->logo = $path;
+        $logo->save();
+
+        // Tampilkan response
+        return response()->json([
+            'message' => 'Berhasil menyimpan logo.',
+            'data' => $logo->logo,
+        ], 200);
+    }
+
+    /**
+     * Update the logo
+     * 
+     * @param Illuminate\Http\Request $request
+     * 
+     * @return Illuminate\Http\Response;
+     */
+    public function update_logo(Request $request, AppManagement $appManagement)
+    {
+        // Custom message
+        $messages = [
+            'required' => 'Kolom :attribute perlu diisi.',
+            'file' => 'Kolom :attribute harus diisi dengan file.',
+            'mimetype' => 'Kolom :attribute harus diisi dengan foto yang berekstensi jpg, jpeg, atau png.',
+            'size' => 'File foto tidak boleh melebihi 3MB.',
+        ];
+
+        // Validator
+        $validator = Validator::make($request->all(), [
+            'logo' => ['file', 'mimetype:image/jpg,image/jpeg,image/png', 'size:3072'],
+        ], $messages);
+
+        // Tampilkan response jika validator gagal memvalidasi
+        if($validator->fails()) {
+            return response()->json([
+                'message' => 'Ada kesalahan pada saat mengupload logo.',
+                'error' => $validator->getMessageBag(),
+            ], 500);
+        }
+
+        // Upload file
+        $path = '';
+
+        if($request->hasFile('logo')) {
+            $extension = $request->logo->extension();
+            $path = $request->logo->storeAs('logo', 'logo-' . Carbon::now() . '.' . $extension);
+
+            if(!$request->file('logo')->isValid()) {
+                return response()->json([
+                    'message' => 'Ada kesalahan pada saat mengunggah logo.',
+                ], 500);
+            }
+        }
+
+        // Update logo
+        if($path != '') {
+            $appManagement->logo = $path;
+        }
+
+        $appManagement->save();
+
+        // Tampilkan response
+        return response()->json([
+            'message' => 'Berhasil menyimpan logo.',
+            'data' => $appManagement->logo,
         ], 200);
     }
 }
