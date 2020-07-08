@@ -15,8 +15,8 @@ class CreateAppManagementTable extends Migration
     {
         Schema::create('app_management', function (Blueprint $table) {
             $table->id();
-            $table->string('base_url');
-            $table->string('logo');
+            $table->string('base_url')->nullable();
+            $table->string('logo')->nullable();
             $table->timestamps();
         });
     }
