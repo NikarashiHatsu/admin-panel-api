@@ -56,13 +56,13 @@ class PatientController extends Controller
         // Validator
         $validator = Validator::make($request->all(), [
             'nama_lengkap' => ['required', 'min:1', 'max:255'],
-            'nik' => ['required', 'min:16', 'max:16'],
+            'nik' => ['required', 'min:0000000000000000', 'max:9999999999999999'],
             'alamat' => ['required'],
             'no_rekam_medis' => ['required', 'min:1', 'max:64'],
             'tinggi_badan' => ['required', 'integer', 'min:1', 'max:999'],
             'berat_badan' => ['required', 'integer', 'min:1', 'max:999'],
             'peranan_keluarga' => ['required', 'in:ayah,ibu,anak'],
-        ]);
+        ], $messages);
 
         // Cek jika validator gagal
         if($validator->fails()) {
@@ -79,6 +79,7 @@ class PatientController extends Controller
         $patient->alamat = $request->alamat;
         $patient->no_rekam_medis = $request->no_rekam_medis;
         $patient->tinggi_badan = $request->tinggi_badan;
+        $patient->berat_badan = $request->berat_badan;
         $patient->peranan_keluarga = $request->peranan_keluarga;
         $patient->riwayat_penyakit = ($request->riwayat_penyakit ? $request->riwayat_penyakit : null);
         $patient->save();
@@ -137,7 +138,7 @@ class PatientController extends Controller
         // Validator
         $validator = Validator::make($request->all(), [
             'nama_lengkap' => ['min:1', 'max:255'],
-            'nik' => ['min:16', 'max:16'],
+            'nik' => ['min:0000000000000000', 'max:9999999999999999'],
             'no_rekam_medis' => ['min:1', 'max:64'],
             'tinggi_badan' => ['integer', 'min:1', 'max:999'],
             'berat_badan' => ['integer', 'min:1', 'max:999'],
