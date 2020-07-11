@@ -10,5 +10,5 @@ This project is used for private project which need an Admin Dashboard. I make t
 
 ### Notes
 - This application is far beyond perfect, since it's the first time for me to use OAuth2 implementation. So expect bugs and errors. Please give me a report if you find some.
-- The API documentation is on the way, but you can see the progress [here](https://documenter.getpostman.com/view/9584289/T17Ge7Nf?version=latest).
+- The API documentation is available [here](https://documenter.getpostman.com/view/9584289/T17Ge7Nf?version=latest).
 - More documentation on how to install will be informed later on.
