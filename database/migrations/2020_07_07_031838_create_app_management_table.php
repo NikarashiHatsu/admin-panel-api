@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateAppManagementTable extends Migration
@@ -19,6 +20,11 @@ class CreateAppManagementTable extends Migration
             $table->string('logo')->nullable();
             $table->timestamps();
         });
+
+        DB::table('app_management')->insert([
+            'base_url' => null,
+            'logo' => null,
+        ]);
     }
 
     /**
